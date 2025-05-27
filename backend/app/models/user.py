@@ -13,7 +13,7 @@ class User:
     username: Mapped[str] = mapped_column(unique=True)
     email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
-    create_at: Mapped[datetime] = mapped_column(sever_default=func.now(), init=False)
+    create_at: Mapped[datetime] = mapped_column(server_default=func.now(), init=False)
 
     def __repr__(self):
         return f"<User(id={self.id}, username={self.username}, email={self.email})>"
