@@ -4,14 +4,16 @@ from fastapi import HTTPException, Depends
 from fastapi import APIRouter
 
 from app.models.user import User
-from app.schemas.user_schema import UserSchema, UserPublicSchema
+from app.schemas.user_schema import UserSchema, UserPublicSchema, UserListSchema
 from app.db.db import get_session
 from sqlalchemy import select
-router = APIRouter(prefix="/users", tags=["Users"])
+
+router = APIRouter(tags=["Users"])
 
 
 @router.post("/users", status_code=HTTPStatus.CREATED, response_model=UserPublicSchema)
 def create_user(user: UserSchema, session=Depends(get_session)):
+
     db_user = session.scalar(
             select(User).where((User.username == user.username) | (User.email == user.email))
     )
@@ -37,9 +39,16 @@ def create_user(user: UserSchema, session=Depends(get_session)):
     return db_user
 
 
-@router.get("/users", response_model=UserPublicSchema)
-def get_users():
-    pass
+@router.get("/users", response_model=UserListSchema)
+def get_users(
+        limit: int=2,
+        session=Depends(get_session)
+     ):
+    user = session.scalars(select(User).limit(limit))
+    return {
+        "users": user
+    }
+
 
 
 @router.put("/users/{user_id}", response_model=UserPublicSchema)

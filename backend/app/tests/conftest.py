@@ -6,12 +6,13 @@ from sqlalchemy.orm import sessionmaker, Session
 from app.db.db import get_session
 from app.main import app
 from app.models.user import table_registry
+from sqlalchemy.pool import StaticPool
+
 
 DATABASE_URL = "sqlite:///./test.db"
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
-from sqlalchemy.pool import StaticPool
 
 
 
@@ -43,8 +44,17 @@ def session():
     table_registry.metadata.drop_all(engine)
 
 
-
+@pytest.fixture()
+def user(session):
+    from app.models.user import User
+    user = User(username="testusername", email="testemail@test.com", password="testpassword")
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return user
 
 @pytest.fixture(scope="session")
 def db_url():
     return "sqlite:///./test.db"
+
+
