@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 def test_create_user(client):
     response = client.post(
-        "/users",
+        "/users/users",
         json={
             "username": "testusername",
             "email": "testemail@test.com",
