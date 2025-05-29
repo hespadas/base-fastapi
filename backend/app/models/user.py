@@ -5,6 +5,7 @@ from sqlalchemy.orm import registry, Mapped, mapped_column
 
 table_registry = registry()
 
+
 @table_registry.mapped_as_dataclass
 class User:
     __tablename__ = "users"

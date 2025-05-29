@@ -8,7 +8,7 @@ def test_create_user(client):
             "username": "testusername",
             "email": "testemail@test.com",
             "password": "testpassword",
-        }
+        },
     )
     assert response.status_code == HTTPStatus.CREATED
     assert response.json() == {
@@ -31,21 +31,13 @@ def test_get_users(client, user):
         ]
     }
 
+
 def test_update_user(client, user):
     response = client.put(
-        "/users/1",
-        json={
-            "username": "updatedusername",
-            "email": "newemail@test.com",
-            "password": "newpassword"
-        }
+        "/users/1", json={"username": "updatedusername", "email": "newemail@test.com", "password": "newpassword"}
     )
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == {
-        "id": 1,
-        "username": "updatedusername",
-        "email": "newemail@test.com"
-        }
+    assert response.json() == {"id": 1, "username": "updatedusername", "email": "newemail@test.com"}
 
 
 def test_delete_user(client, user):

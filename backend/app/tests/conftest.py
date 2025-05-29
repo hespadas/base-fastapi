@@ -15,8 +15,6 @@ engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 
-
-
 @pytest.fixture
 def client(session):
     def get_session_override():
@@ -32,8 +30,8 @@ def client(session):
 @pytest.fixture
 def session():
     engine = create_engine(
-        'sqlite:///:memory:',
-        connect_args={'check_same_thread': False},
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )
     table_registry.metadata.create_all(engine)
@@ -47,14 +45,14 @@ def session():
 @pytest.fixture()
 def user(session):
     from app.models.user import User
+
     user = User(username="testusername", email="testemail@test.com", password="testpassword")
     session.add(user)
     session.commit()
     session.refresh(user)
     return user
 
+
 @pytest.fixture(scope="session")
 def db_url():
     return "sqlite:///./test.db"
-
-
