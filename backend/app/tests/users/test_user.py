@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from app.schemas.user_schema import UserPublicSchema
 
 
 def test_create_user(client):
@@ -19,17 +20,10 @@ def test_create_user(client):
 
 
 def test_get_users(client, user):
+    user_schema = UserPublicSchema.model_validate(user)
     response = client.get("/users")
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == {
-        "users": [
-            {
-                "id": 1,
-                "username": "testusername",
-                "email": "testemail@test.com",
-            }
-        ]
-    }
+    assert response.json() == {'users': [user_schema]}
 
 
 def test_update_user(client, user):
