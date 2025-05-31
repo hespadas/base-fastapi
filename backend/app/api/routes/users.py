@@ -7,6 +7,7 @@ from app.models.user import User
 from app.schemas.user_schema import UserSchema, UserPublicSchema, UserListSchema
 from app.db.db import get_session
 from sqlalchemy import select
+from app.core.security import get_password_hash
 
 router = APIRouter(tags=["Users"])
 
@@ -19,7 +20,7 @@ def create_user(user: UserSchema, session=Depends(get_session)):
             raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="User with this username already exists.")
         if db_user.email == user.email:
             raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="User with this email already exists.")
-    db_user = User(username=user.username, email=user.email, password=user.password)
+    db_user = User(username=user.username, email=user.email, password=get_password_hash(user.password))
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
@@ -39,7 +40,7 @@ def update_user(user_id: int, user: UserSchema, session=Depends(get_session)):
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="User not found.")
     db_user.username = user.username
     db_user.email = user.email
-    db_user.password = user.password
+    db_user.password = get_password_hash(user.password)
     session.commit()
     session.refresh(db_user)
     return db_user
