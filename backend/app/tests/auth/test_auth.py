@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from jwt import decode
 from app.core import settings
 from app.core.security import create_access_token
@@ -14,3 +16,17 @@ def test_jwt():
     result = decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     assert result['sub'] == data['sub']
     assert result['exp'] is not None
+
+
+def test_get_token(client, user):
+    response = client.post(
+        "/token",
+        data={
+            "username": user.username,
+            "password": user.clean_password,
+        },
+    )
+    assert response.status_code == HTTPStatus.OK
+    token = response.json()
+    assert token['token_type'] == 'Bearer'
+    assert 'access_token' in response.json()

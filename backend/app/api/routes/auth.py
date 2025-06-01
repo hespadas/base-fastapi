@@ -7,7 +7,7 @@ from fastapi import APIRouter
 from app.models.user import User
 from app.db.db import get_session
 from sqlalchemy import select
-from app.core.security import verify_password
+from app.core.security import verify_password, create_access_token
 
 router = APIRouter(tags=["Token"])
 
@@ -23,3 +23,8 @@ def login(form_data: OAuth2PasswordRequestForm =Depends(),
             status_code=HTTPStatus.UNAUTHORIZED,
             detail="Incorrect username or password",
         )
+    access_token = create_access_token(data={"sub": user.username})
+    return {
+        "access_token": access_token,
+        "token_type": "Bearer",
+    }

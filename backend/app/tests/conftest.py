@@ -3,11 +3,12 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
+from app.core.security import get_password_hash
 from app.db.db import get_session
 from app.main import app
 from app.models.user import table_registry
 from sqlalchemy.pool import StaticPool
-
+from app.models.user import User
 
 DATABASE_URL = "sqlite:///./test.db"
 
@@ -44,12 +45,12 @@ def session():
 
 @pytest.fixture()
 def user(session):
-    from app.models.user import User
-
-    user = User(username="testusername", email="testemail@test.com", password="testpassword")
+    pwd = "testpassword"
+    user = User(username="testusername", email="testemail@test.com", password=get_password_hash(pwd))
     session.add(user)
     session.commit()
     session.refresh(user)
+    user.clean_password = pwd
     return user
 
 
