@@ -12,6 +12,6 @@ class Settings(BaseSettings):
     # DB_NAME: str = "mydatabase"
     # DB_USER: str
 
-    SECRET_KEY = "secret"
-    ALGORITHM = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES = 30
+    SECRET_KEY: str = "secret"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30

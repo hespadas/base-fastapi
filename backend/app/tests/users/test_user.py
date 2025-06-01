@@ -23,7 +23,7 @@ def test_get_users(client, user):
     user_schema = UserPublicSchema.model_validate(user)
     response = client.get("/users")
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == {'users': [user_schema]}
+    assert response.json() == {'users': [user_schema.model_dump(mode="json")]}
 
 
 def test_update_user(client, user):
