@@ -11,3 +11,7 @@ class Settings(BaseSettings):
     # DB_PORT: int = 5432
     # DB_NAME: str = "mydatabase"
     # DB_USER: str
+
+    SECRET_KEY = "secret"
+    ALGORITHM = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES = 30
