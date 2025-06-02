@@ -57,3 +57,12 @@ def user(session):
 @pytest.fixture(scope="session")
 def db_url():
     return "sqlite:///./test.db"
+
+
+@pytest.fixture()
+def token(client, user):
+    response = client.post(
+        "/token",
+        data={"username": user.username, "password": user.clean_password},
+    )
+    return response.json()["access_token"]

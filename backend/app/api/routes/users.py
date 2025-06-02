@@ -7,7 +7,7 @@ from app.models.user import User
 from app.schemas.user_schema import UserSchema, UserPublicSchema, UserListSchema
 from app.db.db import get_session
 from sqlalchemy import select
-from app.core.security import get_password_hash
+from app.core.security import get_password_hash, get_current_user
 
 router = APIRouter(tags=["Users"])
 
@@ -34,23 +34,24 @@ def get_users(limit: int = 2, session=Depends(get_session)):
 
 
 @router.put("/users/{user_id}", response_model=UserPublicSchema)
-def update_user(user_id: int, user: UserSchema, session=Depends(get_session)):
-    db_user = session.scalar(select(User).where(User.id == user_id))
-    if not db_user:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="User not found.")
-    db_user.username = user.username
-    db_user.email = user.email
-    db_user.password = get_password_hash(user.password)
+def update_user(user_id: int, user: UserSchema, session=Depends(get_session), current_user=Depends(get_current_user)):
+    if user_id != current_user.id:
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only update your own account.")
+    current_user.username = user.username
+    current_user.email = user.email
+    current_user.password = get_password_hash(user.password)
     session.commit()
-    session.refresh(db_user)
-    return db_user
+    session.refresh(current_user)
+    return current_user
 
 
 @router.delete("/users/{user_id}", status_code=HTTPStatus.NO_CONTENT)
-def delete_user(user_id: int, session=Depends(get_session)):
+def delete_user(user_id: int, session=Depends(get_session), current_user=Depends(get_current_user)):
     db_user = session.scalar(select(User).where(User.id == user_id))
-    if not db_user:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="User not found.")
+    if current_user.id != db_user.id:
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only delete your own account.")
     session.delete(db_user)
     session.commit()
-    return None
+    return
+
+

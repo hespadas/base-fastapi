@@ -30,3 +30,12 @@ def test_get_token(client, user):
     token = response.json()
     assert token['token_type'] == 'Bearer'
     assert 'access_token' in response.json()
+
+
+def test_get_token_invalid_token(client):
+    response = client.delete(
+        "/users/1",
+        headers={"Authorization": f"Bearer invalid_token"}
+        )
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.json() == {'detail': 'Could not validate credentials'}

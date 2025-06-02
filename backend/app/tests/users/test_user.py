@@ -26,14 +26,18 @@ def test_get_users(client, user):
     assert response.json() == {'users': [user_schema.model_dump(mode="json")]}
 
 
-def test_update_user(client, user):
+def test_update_user(client, user, token):
     response = client.put(
-        "/users/1", json={"username": "updatedusername", "email": "newemail@test.com", "password": "newpassword"}
+        f"/users/{user.id}",
+        json={"username": "updatedusername", "email": "newemail@test.com", "password": "newpassword"},
+        headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == {"id": 1, "username": "updatedusername", "email": "newemail@test.com"}
+    assert response.json() == {"id": user.id, "username": "updatedusername", "email": "newemail@test.com"}
 
 
-def test_delete_user(client, user):
-    response = client.delete("/users/1")
+def test_delete_user(client, user, token):
+    response = client.delete(
+        "/users/1",
+        headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == HTTPStatus.NO_CONTENT
