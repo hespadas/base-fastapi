@@ -1,5 +1,7 @@
 from fastapi.testclient import TestClient
 import pytest
+import pytest_asyncio
+import factory
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
@@ -43,10 +45,10 @@ def session():
     table_registry.metadata.drop_all(engine)
 
 
-@pytest.fixture()
-def user(session):
+@pytest_asyncio.fixture
+async def user(session):
     pwd = "testpassword"
-    user = User(username="testusername", email="testemail@test.com", password=get_password_hash(pwd))
+    user = UserFactory(password=get_password_hash(pwd))
     session.add(user)
     session.commit()
     session.refresh(user)
@@ -66,3 +68,12 @@ def token(client, user):
         data={"username": user.username, "password": user.clean_password},
     )
     return response.json()["access_token"]
+
+
+class UserFactory(factory.Factory):
+    class Meta:
+        model = User
+
+    username = factory.Sequence(lambda n: f'test{n}')
+    email = factory.LazyAttribute(lambda obj: f'{obj.username}@test.com')
+    password = factory.LazyAttribute(lambda obj: f'{obj.username}@example.com')
