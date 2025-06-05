@@ -11,11 +11,11 @@ ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
 
 def test_jwt():
-    data = {'sub': 'testuser'}
+    data = {"sub": "testuser"}
     token = create_access_token(data)
     result = decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    assert result['sub'] == data['sub']
-    assert result['exp'] is not None
+    assert result["sub"] == data["sub"]
+    assert result["exp"] is not None
 
 
 def test_get_token(client, user):
@@ -28,14 +28,11 @@ def test_get_token(client, user):
     )
     assert response.status_code == HTTPStatus.OK
     token = response.json()
-    assert token['token_type'] == 'Bearer'
-    assert 'access_token' in response.json()
+    assert token["token_type"] == "Bearer"
+    assert "access_token" in response.json()
 
 
 def test_get_token_invalid_token(client):
-    response = client.delete(
-        "/users/1",
-        headers={"Authorization": f"Bearer invalid_token"}
-        )
+    response = client.delete("/users/1", headers={"Authorization": f"Bearer invalid_token"})
     assert response.status_code == HTTPStatus.UNAUTHORIZED
-    assert response.json() == {'detail': 'Could not validate credentials'}
+    assert response.json() == {"detail": "Could not validate credentials"}

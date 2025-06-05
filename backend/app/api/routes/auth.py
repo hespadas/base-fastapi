@@ -15,11 +15,10 @@ router = APIRouter(tags=["Token"])
 T_Session = Annotated[Session, Depends(get_session)]
 T_OAuth2PasswordRequestForm = Annotated[OAuth2PasswordRequestForm, Depends()]
 
+
 @router.post("/token")
-def login(session: T_Session, form_data:T_OAuth2PasswordRequestForm):
-    user = session.scalar(
-        select(User).where(User.username == form_data.username)
-    )
+def login(session: T_Session, form_data: T_OAuth2PasswordRequestForm):
+    user = session.scalar(select(User).where(User.username == form_data.username))
     if not user or not verify_password(form_data.password, str(user.password)):
         raise HTTPException(
             status_code=HTTPStatus.UNAUTHORIZED,

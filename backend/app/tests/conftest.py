@@ -32,17 +32,17 @@ def client(session):
 
 @pytest.fixture
 def session():
-    engine = create_engine(
+    eng = create_engine(
         "sqlite:///:memory:",
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )
-    table_registry.metadata.create_all(engine)
+    table_registry.metadata.create_all(eng)
 
-    with Session(engine) as session:
+    with Session(eng) as session:
         yield session
 
-    table_registry.metadata.drop_all(engine)
+    table_registry.metadata.drop_all(eng)
 
 
 @pytest_asyncio.fixture
@@ -74,6 +74,6 @@ class UserFactory(factory.Factory):
     class Meta:
         model = User
 
-    username = factory.Sequence(lambda n: f'test{n}')
-    email = factory.LazyAttribute(lambda obj: f'{obj.username}@test.com')
-    password = factory.LazyAttribute(lambda obj: f'{obj.username}@example.com')
+    username = factory.Sequence(lambda n: f"test{n}")
+    email = factory.LazyAttribute(lambda obj: f"{obj.username}@test.com")
+    password = factory.LazyAttribute(lambda obj: f"{obj.username}@example.com")

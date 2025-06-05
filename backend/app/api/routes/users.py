@@ -14,6 +14,7 @@ router = APIRouter(tags=["Users"])
 T_Session = Annotated[Session, Depends(get_session)]
 T_CurrentUser = Annotated[User, Depends(get_current_user)]
 
+
 @router.post("/users", status_code=HTTPStatus.CREATED, response_model=UserPublicSchema)
 def create_user(user: UserSchema, session: T_Session):
     db_user = session.scalar(select(User).where((User.username == user.username) | (User.email == user.email)))
@@ -55,5 +56,3 @@ def delete_user(user_id: int, session: T_Session, current_user: T_CurrentUser):
     session.delete(db_user)
     session.commit()
     return
-
-
