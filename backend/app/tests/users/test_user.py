@@ -36,6 +36,16 @@ def test_update_user(client, user, token):
     assert response.json() == {"id": user.id, "username": "updatedusername", "email": "newemail@test.com"}
 
 
+def test_update_user_with_wrong_user(client, another_user, token):
+    response = client.put(
+        f"/users/{another_user.id}",
+        json={"username": "updatedusername", "email": "email@example.com", "password": "mynewpassword"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() == {"detail": "Not allowed to update this user."}
+
+
 def test_delete_user(client, user, token):
     response = client.delete("/users/1", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == HTTPStatus.NO_CONTENT

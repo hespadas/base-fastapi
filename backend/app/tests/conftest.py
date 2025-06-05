@@ -56,6 +56,17 @@ async def user(session):
     return user
 
 
+@pytest_asyncio.fixture
+async def another_user(session):
+    pwd = "anotherpassword"
+    another_user = UserFactory(password=get_password_hash(pwd))
+    session.add(another_user)
+    session.commit()
+    session.refresh(another_user)
+    another_user.clean_password = pwd
+    return another_user
+
+
 @pytest.fixture(scope="session")
 def db_url():
     return "sqlite:///./test.db"

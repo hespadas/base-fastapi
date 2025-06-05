@@ -39,7 +39,7 @@ def get_users(session: T_Session, limit: int = 2):
 @router.put("/users/{user_id}", response_model=UserPublicSchema)
 def update_user(user_id: int, user: UserSchema, session: T_Session, current_user: T_CurrentUser):
     if user_id != current_user.id:
-        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only update your own account.")
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="Not allowed to update this user.")
     current_user.username = user.username
     current_user.email = user.email
     current_user.password = get_password_hash(user.password)
