@@ -54,7 +54,6 @@ def get_current_user(session: Session = Depends(get_session), token: str = Depen
             raise credentials_exception
     except PyJWTError:
         raise credentials_exception
-
     user = session.scalar(select(User).where(User.username == username))
     if user is None:
         raise credentials_exception

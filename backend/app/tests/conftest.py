@@ -58,12 +58,10 @@ async def user(session):
 
 @pytest_asyncio.fixture
 async def another_user(session):
-    pwd = "anotherpassword"
-    another_user = UserFactory(password=get_password_hash(pwd))
+    another_user = UserFactory()
     session.add(another_user)
     session.commit()
     session.refresh(another_user)
-    another_user.clean_password = pwd
     return another_user
 
 
