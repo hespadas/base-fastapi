@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 from fastapi import Depends, HTTPException
 from pwdlib import PasswordHash
-from jwt import decode, encode
+from jwt import decode, encode, ExpiredSignatureError
 from jwt.exceptions import PyJWTError
 from sqlalchemy import select
 
@@ -50,11 +50,13 @@ def get_current_user(session: Session = Depends(get_session), token: str = Depen
     try:
         payload = decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
-        if username is None:
+        if not username:
             raise credentials_exception
+    except ExpiredSignatureError:
+        raise credentials_exception
     except PyJWTError:
         raise credentials_exception
     user = session.scalar(select(User).where(User.username == username))
-    if user is None:
+    if not user:
         raise credentials_exception
     return user

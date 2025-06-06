@@ -73,7 +73,7 @@ def db_url():
 @pytest.fixture()
 def token(client, user):
     response = client.post(
-        "/token",
+        "/access_token",
         data={"username": user.username, "password": user.clean_password},
     )
     return response.json()["access_token"]
