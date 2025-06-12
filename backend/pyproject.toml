@@ -26,6 +26,7 @@ httpx = "^0.28.1"
 factory-boy = "^3.3.3"
 pytest-asyncio = "^1.0.0"
 freezegun = "^1.5.2"
+testcontainers = "^4.10.0"
 
 [tool.ruff]
 line-length = 120

@@ -3,7 +3,7 @@ import pytest
 import pytest_asyncio
 import factory
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session
 
 from app.core.security import get_password_hash
 from app.db.db import get_session
@@ -11,18 +11,23 @@ from app.main import app
 from app.models.user import table_registry
 from sqlalchemy.pool import StaticPool
 from app.models.user import User
+from testcontainers.postgres import PostgresContainer
 
-DATABASE_URL = "sqlite:///./test.db"
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-TestingSessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+@pytest.fixture(scope="session")
+def engine():
+    with PostgresContainer("postgres:latest") as postgres:
+        _engine = create_engine(
+            postgres.get_connection_url(),
+        )
+        with _engine.begin():
+            yield _engine
 
 
 @pytest.fixture
 def client(session):
     def get_session_override():
         return session
-
     with TestClient(app) as client:
         app.dependency_overrides[get_session] = get_session_override
         yield client
@@ -31,18 +36,13 @@ def client(session):
 
 
 @pytest.fixture
-def session():
-    eng = create_engine(
-        "sqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-    table_registry.metadata.create_all(eng)
+def session(engine):
+    table_registry.metadata.create_all(engine)
 
-    with Session(eng) as session:
+    with Session(engine) as session:
         yield session
-
-    table_registry.metadata.drop_all(eng)
+        session.rollback()
+    table_registry.metadata.drop_all(engine)
 
 
 @pytest_asyncio.fixture
