@@ -1,4 +1,5 @@
 FROM python:3.12
+ENV POETRY_VIRTUALENVS_CREATE=false
 
 WORKDIR /app
 

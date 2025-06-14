@@ -8,9 +8,11 @@ services:
     ports:
       - "5433:5432"
   backend_app:
+    image: backend
+    entrypoint: ./entrypoint.sh
     build: .
     environment:
-      DATABASE_URL: postgresql://user:password@backend_database:5432/mydatabase  # <---- CORRIGIDO
+      DATABASE_URL: postgresql://user:password@backend_database:5432/mydatabase
     ports:
       - "8000:8000"
     depends_on:
