@@ -78,22 +78,25 @@ def test_token_wrong_password(client, user):
     assert response.json() == {"detail": "Incorrect username or password"}
 
 
-def test_refresh_token(client, user, token):
+def test_refresh_token(client, user):
+    response = client.post(
+        "/access_token",
+        data={"username": user.username, "password": user.clean_password},
+    )
+    tokens = response.json()
+    refresh_token = tokens["refresh_token"]
     response = client.post(
         "/refresh_token",
-        headers={"Authorization": f"Bearer {token}"},
+        json={"refresh_token": refresh_token},
     )
     assert response.status_code == HTTPStatus.OK
-    new_token = response.json()
-    assert "access_token" in new_token
-    assert "token_type" in new_token
-    assert new_token["token_type"] == "Bearer"
+    assert "access_token" in response.json()
 
 
-def test_refresh_token_without_authentication(client):
-    response = client.post("/refresh_token")
+def test_refresh_token_with_invalid_token(client):
+    response = client.post("/refresh_token", json={"refresh_token": "invalid"})
     assert response.status_code == HTTPStatus.UNAUTHORIZED
-    assert response.json() == {"detail": "Not authenticated"}
+    assert response.json() == {"detail": "Could not validate refresh token"}
 
 
 def test_token_expired_dont_refresh(client, user):
@@ -106,11 +109,12 @@ def test_token_expired_dont_refresh(client, user):
             },
         )
         assert response.status_code == HTTPStatus.OK
-        token = response.json()["access_token"]
-    with freeze_time("2023-10-01 00:31:00"):
+        refresh_token = response.json()["refresh_token"]
+    with freeze_time("2023-10-01 01:00:00"):
         response = client.post(
             "/refresh_token",
-            headers={"Authorization": f"Bearer {token}"},
+            json={"refresh_token": refresh_token},
         )
         assert response.status_code == HTTPStatus.UNAUTHORIZED
-        assert response.json() == {"detail": "Could not validate credentials"}
+        assert response.json() == {"detail": "Could not validate refresh token"}
+

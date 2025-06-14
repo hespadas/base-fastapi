@@ -9,7 +9,6 @@ from app.core.security import get_password_hash
 from app.db.db import get_session
 from app.main import app
 from app.models.user import table_registry
-from sqlalchemy.pool import StaticPool
 from app.models.user import User
 from testcontainers.postgres import PostgresContainer
 
