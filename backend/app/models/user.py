@@ -1,12 +1,11 @@
 from datetime import datetime
 
 from sqlalchemy import func
-from sqlalchemy.orm import registry, Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
+from app.models.base import mapper_registry as registry
 
-table_registry = registry()
 
-
-@table_registry.mapped_as_dataclass
+@registry.mapped_as_dataclass
 class User:
     __tablename__ = "users"
 

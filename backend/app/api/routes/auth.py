@@ -39,5 +39,3 @@ def refresh_access_token(body: RefreshRequest):
     username = validate_refresh_token(body.refresh_token)
     access_token = create_access_token(data={"sub": username})
     return Token(access_token=access_token, token_type="Bearer")
-
-

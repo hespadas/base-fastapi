@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.core.security import get_password_hash
 from app.db.db import get_session
 from app.main import app
-from app.models.user import table_registry
+from app.models.user import registry
 from app.models.user import User
 from testcontainers.postgres import PostgresContainer
 
@@ -27,6 +27,7 @@ def engine():
 def client(session):
     def get_session_override():
         return session
+
     with TestClient(app) as client:
         app.dependency_overrides[get_session] = get_session_override
         yield client
@@ -36,12 +37,12 @@ def client(session):
 
 @pytest.fixture
 def session(engine):
-    table_registry.metadata.create_all(engine)
+    registry.metadata.create_all(engine)
 
     with Session(engine) as session:
         yield session
         session.rollback()
-    table_registry.metadata.drop_all(engine)
+    registry.metadata.drop_all(engine)
 
 
 @pytest_asyncio.fixture
@@ -62,11 +63,6 @@ async def another_user(session):
     session.commit()
     session.refresh(another_user)
     return another_user
-
-
-@pytest.fixture(scope="session")
-def db_url():
-    return "sqlite:///./test.db"
 
 
 @pytest.fixture()
