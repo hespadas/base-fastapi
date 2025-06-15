@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.core.security import get_password_hash
 from app.db.db import get_session
 from app.main import app
+from app.models.experience import Experience
 from app.models.user import registry
 from app.models.user import User
 from testcontainers.postgres import PostgresContainer
@@ -57,6 +58,15 @@ async def user(session):
 
 
 @pytest_asyncio.fixture
+async def experience(session):
+    experience = ExperienceFactory()
+    session.add(experience)
+    session.commit()
+    session.refresh(experience)
+    return experience
+
+
+@pytest_asyncio.fixture
 async def another_user(session):
     another_user = UserFactory()
     session.add(another_user)
@@ -81,3 +91,15 @@ class UserFactory(factory.Factory):
     username = factory.Sequence(lambda n: f"test{n}")
     email = factory.LazyAttribute(lambda obj: f"{obj.username}@test.com")
     password = factory.LazyAttribute(lambda obj: f"{obj.username}@example.com")
+
+
+class ExperienceFactory(factory.Factory):
+    class Meta:
+        model = Experience
+
+    title = factory.Sequence(lambda n: f"Experience {n}")
+    description = factory.Faker("text")
+    start_date = factory.Faker("date_time_this_decade")
+    end_date = factory.Faker("date_time_this_decade")
+    company = factory.Faker("company")
+    user_id = 1

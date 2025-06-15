@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 
@@ -18,3 +18,4 @@ class ExperiencePublicSchema(BaseModel):
     company: str | None = None
     start_date: datetime | None = None
     end_date: datetime | None = None
+    model_config = ConfigDict(from_attributes=True)

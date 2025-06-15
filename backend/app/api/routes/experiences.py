@@ -33,3 +33,11 @@ def create_experience(experience: ExperienceSchema, session: T_Session, current_
     session.commit()
     session.refresh(new_experience)
     return new_experience
+
+@router.get("/experiences/{user_id}", response_model=dict[str, list[ExperiencePublicSchema]])
+def get_experiences(user_id: int, session: T_Session):
+    experiences = session.query(Experience).filter(Experience.user_id == user_id).all()
+    if not experiences:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="No experiences found for this user")
+    return {"experiences": [ExperiencePublicSchema.model_validate(experience).model_dump(mode="json") for experience in experiences]}
+
