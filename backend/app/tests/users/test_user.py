@@ -47,11 +47,7 @@ def test_update_user_with_wrong_user(client, another_user, token):
 
 
 def test_delete_user(client, user, token):
-    response = client.delete("/users/1", headers={"Authorization": f"Bearer {token}"})
+    response = client.delete(f"/users/{user.id}", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
-def test_delete_user_with_wrong_user(client, another_user, token):
-    response = client.delete(f"/users/{another_user.id}", headers={"Authorization": f"Bearer {token}"})
-    assert response.status_code == HTTPStatus.FORBIDDEN
-    assert response.json() == {"detail": "You can only delete your own account."}

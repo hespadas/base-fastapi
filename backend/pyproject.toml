@@ -30,6 +30,7 @@ factory-boy = "^3.3.3"
 pytest-asyncio = "^1.0.0"
 freezegun = "^1.5.2"
 testcontainers = "^4.10.0"
+pytest-cov = "^6.2.1"
 
 [tool.ruff]
 line-length = 120

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import mapper_registry as registry
@@ -12,6 +12,6 @@ class Experience:
     user_id: Mapped[int]
     title: Mapped[str]
     description: Mapped[str]
-    start_date: Mapped[datetime] = mapped_column(default=None)
-    end_date: Mapped[datetime | None] = mapped_column(default=None)
+    start_date: Mapped[date] = mapped_column(default=None)
+    end_date: Mapped[date | None] = mapped_column(default=None)
     company: Mapped[str | None] = mapped_column(default=None)

@@ -1,3 +1,4 @@
+import datetime
 from http import HTTPStatus
 from app.schemas.experience_schema import ExperiencePublicSchema
 
@@ -9,9 +10,9 @@ def test_create_experience(client, user, token):
             "title": "Test Experience",
             "description": "This is a test experience.",
             "start_date": "2023-10-01T00:00:00",
-            "company": None,
+            "company": "Espadas Company",
             "user_id": user.id,
-            "end_date": None,
+            "end_date": "2023-12-31"
         },
         headers={"Authorization": f"Bearer {token}"},
     )
@@ -20,9 +21,9 @@ def test_create_experience(client, user, token):
         "id": 1,
         "title": "Test Experience",
         "description": "This is a test experience.",
-        "company": None,
+        "company": "Espadas Company",
         "start_date": response.json()["start_date"],
-        "end_date": None,
+        "end_date": "2023-12-31"
     }
 
 
@@ -33,9 +34,9 @@ def test_create_experience_without_authentication(client):
             "title": "Test Experience",
             "description": "This is a test experience.",
             "start_date": "2023-10-01T00:00:00",
-            "company": None,
+            "company": "Espadas Company",
             "user_id": 1,
-            "end_date": None,
+            "end_date": "2023-12-31"
         },
     )
     assert response.status_code == HTTPStatus.UNAUTHORIZED
@@ -47,5 +48,35 @@ def test_get_experiences(client, user, experience):
     response = client.get(f"/experiences/{user.id}")
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {"experiences": [experience_schema.model_dump(mode="json")]}
+
+
+def test_update_experience(client, user, experience, token):
+    response = client.put(
+        f"/experiences/{experience.id}",
+        json={
+            "title": "Updated Experience",
+            "description": "This is an updated test experience.",
+            "start_date": "2023-10-01T00:00:00",
+            "company": "Updated Company",
+            "end_date": "2024-01-01"
+        },
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {
+        "id": experience.id,
+        "title": "Updated Experience",
+        "description": "This is an updated test experience.",
+        "company": "Updated Company",
+        "start_date": response.json()["start_date"],
+        "end_date": "2024-01-01"
+    }
+
+
+def test_delete_experience(client, user, experience, token):
+    response = client.delete(f"/experiences/{experience.id}", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == HTTPStatus.NO_CONTENT
+
+
 
 
