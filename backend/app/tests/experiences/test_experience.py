@@ -4,7 +4,7 @@ from app.schemas.experience_schema import ExperiencePublicSchema
 
 def test_create_experience(client, user, token):
     response = client.post(
-        "/experiences",
+        "/api/experiences",
         json={
             "title": "Test Experience",
             "description": "This is a test experience.",
@@ -28,7 +28,7 @@ def test_create_experience(client, user, token):
 
 def test_create_experience_without_authentication(client):
     response = client.post(
-        "/experiences",
+        "/api/experiences",
         json={
             "title": "Test Experience",
             "description": "This is a test experience.",
@@ -44,14 +44,14 @@ def test_create_experience_without_authentication(client):
 
 def test_get_experiences(client, user, experience):
     experience_schema = ExperiencePublicSchema.model_validate(experience)
-    response = client.get(f"/experiences/{user.id}")
+    response = client.get(f"/api/experiences/{user.id}")
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {"experiences": [experience_schema.model_dump(mode="json")]}
 
 
 def test_update_experience(client, user, experience, token):
     response = client.put(
-        f"/experiences/{experience.id}",
+        f"/api/experiences/{experience.id}",
         json={
             "title": "Updated Experience",
             "description": "This is an updated test experience.",
@@ -73,5 +73,5 @@ def test_update_experience(client, user, experience, token):
 
 
 def test_delete_experience(client, user, experience, token):
-    response = client.delete(f"/experiences/{experience.id}", headers={"Authorization": f"Bearer {token}"})
+    response = client.delete(f"/api/experiences/{experience.id}", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == HTTPStatus.NO_CONTENT

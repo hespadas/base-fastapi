@@ -15,7 +15,7 @@ T_Session = Annotated[Session, Depends(get_session)]
 T_CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
-@router.post("/users", status_code=HTTPStatus.CREATED, response_model=UserPublicSchema)
+@router.post("/signup", status_code=HTTPStatus.CREATED, response_model=UserPublicSchema)
 def create_user_endpoint(user: UserSchema, session: Session = Depends(get_session)):
     user_repo = UserRepository(session)
     detail_for_raise_if_user_exist = user_repo.get_detail_if_username_or_email_exists(

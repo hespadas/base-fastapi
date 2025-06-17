@@ -78,7 +78,7 @@ async def another_user(session):
 @pytest.fixture()
 def token(client, user):
     response = client.post(
-        "/access_token",
+        "/api/access_token",
         data={"username": user.username, "password": user.clean_password},
     )
     return response.json()["access_token"]

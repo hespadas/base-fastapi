@@ -21,7 +21,7 @@ def test_jwt():
 
 def test_get_token(client, user):
     response = client.post(
-        "/access_token",
+        "/api/access_token",
         data={
             "username": user.username,
             "password": user.clean_password,
@@ -36,7 +36,7 @@ def test_get_token(client, user):
 def test_token_expired_after_time(client, user):
     with freeze_time("2023-10-01 00:00:00"):
         response = client.post(
-            "/access_token",
+            "/api/access_token",
             data={
                 "username": user.username,
                 "password": user.clean_password,
@@ -46,7 +46,7 @@ def test_token_expired_after_time(client, user):
         token = response.json()["access_token"]
     with freeze_time("2023-10-01 00:31:00"):
         response = client.put(
-            f"/users/{user.id}",
+            f"/api/users/{user.id}",
             json={"username": "wrong", "email": "wrong@wrong.com", "password": "wrong"},
             headers={"Authorization": f"Bearer {token}"},
         )
@@ -56,7 +56,7 @@ def test_token_expired_after_time(client, user):
 
 def test_token_inexistent_user(client):
     response = client.post(
-        "/access_token",
+        "/api/access_token",
         data={
             "username": "nonexistent",
             "password": "wrongpassword",
@@ -68,7 +68,7 @@ def test_token_inexistent_user(client):
 
 def test_token_wrong_password(client, user):
     response = client.post(
-        "/access_token",
+        "/api/access_token",
         data={
             "username": user.username,
             "password": "wrongpassword",
@@ -80,13 +80,13 @@ def test_token_wrong_password(client, user):
 
 def test_refresh_token(client, user):
     response = client.post(
-        "/access_token",
+        "/api/access_token",
         data={"username": user.username, "password": user.clean_password},
     )
     tokens = response.json()
     refresh_token = tokens["refresh_token"]
     response = client.post(
-        "/refresh_token",
+        "/api/refresh_token",
         json={"refresh_token": refresh_token},
     )
     assert response.status_code == HTTPStatus.OK
@@ -94,7 +94,7 @@ def test_refresh_token(client, user):
 
 
 def test_refresh_token_with_invalid_token(client):
-    response = client.post("/refresh_token", json={"refresh_token": "invalid"})
+    response = client.post("/api/refresh_token", json={"refresh_token": "invalid"})
     assert response.status_code == HTTPStatus.UNAUTHORIZED
     assert response.json() == {"detail": "Could not validate refresh token"}
 
@@ -102,7 +102,7 @@ def test_refresh_token_with_invalid_token(client):
 def test_token_expired_dont_refresh(client, user):
     with freeze_time("2023-10-01 00:00:00"):
         response = client.post(
-            "/access_token",
+            "/api/access_token",
             data={
                 "username": user.username,
                 "password": user.clean_password,
@@ -112,7 +112,7 @@ def test_token_expired_dont_refresh(client, user):
         refresh_token = response.json()["refresh_token"]
     with freeze_time("2023-10-01 01:00:00"):
         response = client.post(
-            "/refresh_token",
+            "/api/refresh_token",
             json={"refresh_token": refresh_token},
         )
         assert response.status_code == HTTPStatus.UNAUTHORIZED
