@@ -1,22 +1,13 @@
-from fastapi import Depends
-from fastapi import APIRouter
-from typing import Annotated
-
 from sqlalchemy import select
 
 from app.models.user import User
 from app.schemas.user_schema import UserSchema
-from app.db.db import get_session
 from sqlalchemy.orm import Session
-from app.core.security import get_password_hash, get_current_user
-
-router = APIRouter(tags=["Users"])
-T_Session = Annotated[Session, Depends(get_session)]
-T_CurrentUser = Annotated[User, Depends(get_current_user)]
+from app.core.security import get_password_hash
 
 
 class UserRepository:
-    def __init__(self, session: T_Session):
+    def __init__(self, session: Session):
         self.session = session
 
     def create(self, user: UserSchema) -> User:
@@ -26,7 +17,24 @@ class UserRepository:
         self.session.refresh(db_user)
         return db_user
 
-    def get_by_username_or_email(self, username: str = None, email: str = None) -> str | None:
+    def update(self, user_id: int, user: UserSchema) -> User:
+        db_user = self.session.scalar(select(User).where(User.id == user_id))
+        db_user.username = user.username
+        db_user.email = str(user.email)
+        db_user.password = get_password_hash(user.password)
+        self.session.commit()
+        self.session.refresh(db_user)
+        return db_user
+
+    def get_all(self, limit: int = 2) -> list[User]:
+        return list(self.session.scalars(select(User).limit(limit)).all())
+
+    def delete(self, user_id: int) -> None:
+        db_user = self.session.scalar(select(User).where(User.id == user_id))
+        self.session.delete(db_user)
+        self.session.commit()
+
+    def get_detail_if_username_or_email_exists(self, username: str = None, email: str = None) -> str | None:
         db_user = self.session.scalar(select(User).where((User.username == username) | (User.email == email)))
         if db_user:
             if db_user.username == username:
