@@ -1,11 +1,12 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 
-from app.core.settings import Settings
+def get_engine():
+    from app.core.settings import Settings
+    return create_engine(Settings().DATABASE_URL, echo=True, future=True)
 
-engine = create_engine(Settings().DATABASE_URL, echo=True, future=True)
-
-
-def get_session() -> Session:
-    with Session(engine) as session:
+def get_session():
+    engine = get_engine()
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    with SessionLocal() as session:
         yield session

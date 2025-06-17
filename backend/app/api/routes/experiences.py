@@ -2,7 +2,6 @@ from http import HTTPStatus
 from fastapi import HTTPException, Depends
 from fastapi import APIRouter
 from typing import Annotated
-from datetime import datetime
 
 from sqlalchemy import select
 

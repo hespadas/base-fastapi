@@ -1,11 +1,11 @@
 from fastapi import Depends
 from fastapi import APIRouter
-from typing import Annotated, Any
+from typing import Annotated
 
 from sqlalchemy import select
 
 from app.models.user import User
-from app.schemas.user_schema import UserSchema, UserPublicSchema
+from app.schemas.user_schema import UserSchema
 from app.db.db import get_session
 from sqlalchemy.orm import Session
 from app.core.security import get_password_hash, get_current_user

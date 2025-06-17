@@ -9,7 +9,7 @@ from app.models.user import User
 from app.db.db import get_session
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from app.core.security import verify_password, create_access_token, get_current_user, validate_refresh_token
+from app.core.security import verify_password, create_access_token, validate_refresh_token
 from app.schemas.token_schema import Token, RefreshRequest
 
 router = APIRouter(tags=["Token"])
