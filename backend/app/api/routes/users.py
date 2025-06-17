@@ -28,7 +28,7 @@ def create_user_endpoint(user: UserSchema, session: Session = Depends(get_sessio
 
 
 @router.get("/users", response_model=UserListSchema)
-def get_users_endpoint(session: T_Session, limit: int = 2):
+def get_all_users_endpoint(session: T_Session, limit: int = 2):
     user_repo = UserRepository(session)
     users = user_repo.get_all(limit=limit)
     return {"users": users}

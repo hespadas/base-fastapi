@@ -1,22 +1,22 @@
 from fastapi.testclient import TestClient
 import pytest
 import pytest_asyncio
-import factory
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from app.core.security import get_password_hash
 from app.db.db import get_session
 from app.main import app
-from app.models.experience import Experience
 from app.models.user import registry
-from app.models.user import User
 from testcontainers.postgres import PostgresContainer
+
+from app.tests.factories.experience_factory import ExperienceFactory
+from app.tests.factories.user_factory import UserFactory
 
 
 @pytest.fixture(scope="session")
 def engine():
-    with PostgresContainer("postgres:latest") as postgres:
+    with PostgresContainer() as postgres:
         _engine = create_engine(
             postgres.get_connection_url(),
         )
@@ -84,22 +84,5 @@ def token(client, user):
     return response.json()["access_token"]
 
 
-class UserFactory(factory.Factory):
-    class Meta:
-        model = User
-
-    username = factory.Sequence(lambda n: f"test{n}")
-    email = factory.LazyAttribute(lambda obj: f"{obj.username}@test.com")
-    password = factory.LazyAttribute(lambda obj: f"{obj.username}@example.com")
 
 
-class ExperienceFactory(factory.Factory):
-    class Meta:
-        model = Experience
-
-    title = factory.Sequence(lambda n: f"Experience {n}")
-    description = factory.Faker("text")
-    start_date = factory.Faker("date_time_this_decade")
-    end_date = factory.Faker("date_time_this_decade")
-    company = factory.Faker("company")
-    user_id = 1
