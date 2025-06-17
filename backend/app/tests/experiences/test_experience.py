@@ -12,7 +12,7 @@ def test_create_experience(client, user, token):
             "start_date": "2023-10-01T00:00:00",
             "company": "Espadas Company",
             "user_id": user.id,
-            "end_date": "2023-12-31"
+            "end_date": "2023-12-31",
         },
         headers={"Authorization": f"Bearer {token}"},
     )
@@ -23,7 +23,7 @@ def test_create_experience(client, user, token):
         "description": "This is a test experience.",
         "company": "Espadas Company",
         "start_date": response.json()["start_date"],
-        "end_date": "2023-12-31"
+        "end_date": "2023-12-31",
     }
 
 
@@ -36,7 +36,7 @@ def test_create_experience_without_authentication(client):
             "start_date": "2023-10-01T00:00:00",
             "company": "Espadas Company",
             "user_id": 1,
-            "end_date": "2023-12-31"
+            "end_date": "2023-12-31",
         },
     )
     assert response.status_code == HTTPStatus.UNAUTHORIZED
@@ -58,7 +58,7 @@ def test_update_experience(client, user, experience, token):
             "description": "This is an updated test experience.",
             "start_date": "2023-10-01T00:00:00",
             "company": "Updated Company",
-            "end_date": "2024-01-01"
+            "end_date": "2024-01-01",
         },
         headers={"Authorization": f"Bearer {token}"},
     )
@@ -69,14 +69,10 @@ def test_update_experience(client, user, experience, token):
         "description": "This is an updated test experience.",
         "company": "Updated Company",
         "start_date": response.json()["start_date"],
-        "end_date": "2024-01-01"
+        "end_date": "2024-01-01",
     }
 
 
 def test_delete_experience(client, user, experience, token):
     response = client.delete(f"/experiences/{experience.id}", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == HTTPStatus.NO_CONTENT
-
-
-
-

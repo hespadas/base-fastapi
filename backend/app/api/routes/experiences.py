@@ -36,15 +36,23 @@ def create_experience(experience: ExperienceSchema, session: T_Session, current_
     session.refresh(new_experience)
     return new_experience
 
+
 @router.get("/experiences/{user_id}", response_model=dict[str, list[ExperiencePublicSchema]])
 def get_experiences(user_id: int, session: T_Session):
     experiences = session.query(Experience).filter(Experience.user_id == user_id).all()
     if not experiences:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="No experiences found for this user")
-    return {"experiences": [ExperiencePublicSchema.model_validate(experience).model_dump(mode="json") for experience in experiences]}
+    return {
+        "experiences": [
+            ExperiencePublicSchema.model_validate(experience).model_dump(mode="json") for experience in experiences
+        ]
+    }
+
 
 @router.put("/experiences/{experience_id}", response_model=ExperiencePublicSchema)
-def update_experience(experience_id: int, experience: ExperienceSchema, session: T_Session, current_user: T_CurrentUser):
+def update_experience(
+    experience_id: int, experience: ExperienceSchema, session: T_Session, current_user: T_CurrentUser
+):
     existing_experience = session.scalar(select(Experience).where(Experience.id == experience_id))
     if not existing_experience:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Experience not found")

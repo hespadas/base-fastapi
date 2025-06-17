@@ -19,6 +19,32 @@ def test_create_user(client):
     }
 
 
+def test_create_user_with_existing_username(client, user):
+    response = client.post(
+        "/users",
+        json={
+            "username": user.username,
+            "email": user.email,
+            "password": "newpassword",
+        },
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() == {"detail": "User with this username already exists."}
+
+
+def test_create_user_with_existing_email(client, user):
+    response = client.post(
+        "/users",
+        json={
+            "username": "newusername",
+            "email": user.email,
+            "password": "newpassword",
+        },
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() == {"detail": "User with this email already exists."}
+
+
 def test_get_users(client, user):
     user_schema = UserPublicSchema.model_validate(user)
     response = client.get("/users")
@@ -49,5 +75,3 @@ def test_update_user_with_wrong_user(client, another_user, token):
 def test_delete_user(client, user, token):
     response = client.delete(f"/users/{user.id}", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == HTTPStatus.NO_CONTENT
-
-
