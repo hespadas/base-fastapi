@@ -99,6 +99,28 @@ def test_refresh_token_with_invalid_token(client):
     assert response.json() == {"detail": "Could not validate refresh token"}
 
 
+def test_refresh_token_blacklisted(client, user):
+    response = client.post(
+        "/api/access_token",
+        data={"username": user.username, "password": user.clean_password},
+    )
+    assert response.status_code == HTTPStatus.OK
+    refresh_token = response.json()["refresh_token"]
+
+    response = client.post(
+        "/api/logout",
+        json={"refresh_token": refresh_token}
+    )
+    assert response.status_code == HTTPStatus.NO_CONTENT
+
+    response = client.post(
+        "/api/refresh_token",
+        json={"refresh_token": refresh_token}
+    )
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.json() == {"detail": "Token is blacklisted"}
+
+
 def test_token_expired_dont_refresh(client, user):
     with freeze_time("2023-10-01 00:00:00"):
         response = client.post(
