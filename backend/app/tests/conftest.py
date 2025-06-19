@@ -82,7 +82,3 @@ def token(client, user):
         data={"username": user.username, "password": user.clean_password},
     )
     return response.json()["access_token"]
-
-
-
-

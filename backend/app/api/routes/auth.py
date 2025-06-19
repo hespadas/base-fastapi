@@ -54,8 +54,10 @@ def logout(body: RefreshRequest, session: T_Session):
     try:
         validate_refresh_token(refresh_token)
     except HTTPException:
-        return
+        raise HTTPException(
+            status_code=HTTPStatus.UNAUTHORIZED,
+            detail="Could not validate refresh token",
+        )
     blacklist_repo = BlacklistRepository(session)
     if not blacklist_repo.is_blacklisted(refresh_token):
         blacklist_repo.add_to_blacklist(refresh_token)
-

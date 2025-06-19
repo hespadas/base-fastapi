@@ -6,12 +6,7 @@ class BlacklistRepository:
         self.session = session
 
     def is_blacklisted(self, token: str) -> bool:
-        return (
-            self.session.query(BlacklistedToken)
-            .filter(BlacklistedToken.token == token)
-            .first()
-            is not None
-        )
+        return self.session.query(BlacklistedToken).filter(BlacklistedToken.token == token).first() is not None
 
     def add_to_blacklist(self, token: str):
         blacklisted = BlacklistedToken(token=token)
