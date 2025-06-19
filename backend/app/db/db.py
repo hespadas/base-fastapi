@@ -10,6 +10,6 @@ def get_engine():
 
 def get_session():
     engine = get_engine()
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    with SessionLocal() as session:
+    session_local = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    with session_local() as session:
         yield session

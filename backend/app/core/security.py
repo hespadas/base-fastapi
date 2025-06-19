@@ -17,7 +17,7 @@ from app.db.db import get_session
 from app.models.user import User
 
 pwd_context = PasswordHash.recommended()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/access_token")
 
 settings = settings.Settings()
 SECRET_KEY = settings.SECRET_KEY

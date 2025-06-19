@@ -7,7 +7,9 @@ export default function Signup() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState(false);
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -33,12 +35,10 @@ export default function Signup() {
                 setError(errorData.message || "An error occurred during signup.");
                 return;
             } else {
-                const data = await response.json();
-                console.log("Signup successful:", data);
+                setSuccess(true);
             }
-
         } catch (err) {
-            console.error("Signup error:", err);
+            setError("An unexpected error occurred. Please try again later.");
         }
     }
 
@@ -100,6 +100,11 @@ export default function Signup() {
                     </button>
                     {error && (
                         <div className="text-red-600 text-sm text-center">{error}</div>
+                    )}
+                    {success && (
+                        <div className="text-green-600 text-sm text-center">
+                            Signup successful! You can now log in.
+                        </div>
                     )}
                 </form>
             </div>
