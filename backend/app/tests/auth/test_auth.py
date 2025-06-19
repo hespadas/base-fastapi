@@ -11,6 +11,14 @@ ALGORITHM = settings.ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
 
+def get_tokens(client, user):
+    response = client.post(
+        "/api/access_token",
+        data={"username": user.username, "password": user.clean_password},
+    )
+    return response
+
+
 def test_jwt():
     data = {"sub": "testuser"}
     token = create_access_token(data)
@@ -20,13 +28,7 @@ def test_jwt():
 
 
 def test_get_token(client, user):
-    response = client.post(
-        "/api/access_token",
-        data={
-            "username": user.username,
-            "password": user.clean_password,
-        },
-    )
+    response = get_tokens(client, user)
     assert response.status_code == HTTPStatus.OK
     token = response.json()
     assert token["token_type"] == "Bearer"
@@ -35,13 +37,7 @@ def test_get_token(client, user):
 
 def test_token_expired_after_time(client, user):
     with freeze_time("2023-10-01 00:00:00"):
-        response = client.post(
-            "/api/access_token",
-            data={
-                "username": user.username,
-                "password": user.clean_password,
-            },
-        )
+        response = get_tokens(client, user)
         assert response.status_code == HTTPStatus.OK
         token = response.json()["access_token"]
     with freeze_time("2023-10-01 00:31:00"):
@@ -79,10 +75,8 @@ def test_token_wrong_password(client, user):
 
 
 def test_refresh_token(client, user):
-    response = client.post(
-        "/api/access_token",
-        data={"username": user.username, "password": user.clean_password},
-    )
+    response = get_tokens(client, user)
+    assert response.status_code == HTTPStatus.OK
     tokens = response.json()
     refresh_token = tokens["refresh_token"]
     response = client.post(
@@ -90,7 +84,9 @@ def test_refresh_token(client, user):
         json={"refresh_token": refresh_token},
     )
     assert response.status_code == HTTPStatus.OK
-    assert "access_token" in response.json()
+    new_tokens = response.json()
+    assert "access_token" in new_tokens
+    assert new_tokens["token_type"] == "Bearer"
 
 
 def test_refresh_token_with_invalid_token(client):
