@@ -10,8 +10,8 @@ from app.main import app
 from app.models.user import registry
 from testcontainers.postgres import PostgresContainer
 
-from app.tests.factories.experience_factory import ExperienceFactory
-from app.tests.factories.user_factory import UserFactory
+from app.tests.experiences.experience_factory import ExperienceFactory
+from app.tests.users.user_factory import UserFactory
 
 
 @pytest.fixture(scope="session")
