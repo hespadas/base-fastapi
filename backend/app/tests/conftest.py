@@ -4,7 +4,7 @@ import pytest_asyncio
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from app.core.security import get_password_hash
+from app.core.security.password_utils import get_password_hash
 from app.db.db import get_session
 from app.main import app
 from app.models.user import registry

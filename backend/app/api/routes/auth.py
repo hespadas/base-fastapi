@@ -5,11 +5,12 @@ from fastapi import HTTPException, Depends
 
 from fastapi import APIRouter
 
+from app.core.security.password_utils import verify_password
+from app.core.security.token_utils import validate_refresh_token, create_access_token
 from app.models.user import User
 from app.db.db import get_session
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from app.core.security import verify_password, create_access_token, validate_refresh_token
 from app.repositories.blacklist_repository import BlacklistRepository
 from app.schemas.token_schema import Token, RefreshRequest
 

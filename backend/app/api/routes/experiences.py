@@ -5,12 +5,12 @@ from typing import Annotated
 
 from sqlalchemy import select
 
+from app.core.security.dependencies import get_current_user
 from app.models.experience import Experience
 from app.models.user import User
 from app.schemas.experience_schema import ExperiencePublicSchema, ExperienceSchema
 from app.db.db import get_session
 from sqlalchemy.orm import Session
-from app.core.security import get_current_user
 
 
 router = APIRouter(tags=["Experiences"])

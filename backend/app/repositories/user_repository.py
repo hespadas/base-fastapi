@@ -1,9 +1,9 @@
 from sqlalchemy import select
 
+from app.core.security.password_utils import get_password_hash
 from app.models.user import User
 from app.schemas.user_schema import UserSchema
 from sqlalchemy.orm import Session
-from app.core.security import get_password_hash
 
 
 class UserRepository:

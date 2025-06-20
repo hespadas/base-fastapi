@@ -3,11 +3,11 @@ from fastapi import HTTPException, Depends
 from fastapi import APIRouter
 from typing import Annotated
 
+from app.core.security.dependencies import get_current_user
 from app.models.user import User
 from app.schemas.user_schema import UserSchema, UserPublicSchema, UserListSchema
 from app.db.db import get_session
 from sqlalchemy.orm import Session
-from app.core.security import get_current_user
 from app.repositories.user_repository import UserRepository
 
 router = APIRouter(tags=["Users"])

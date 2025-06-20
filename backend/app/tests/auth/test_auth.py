@@ -3,7 +3,7 @@ from http import HTTPStatus
 from freezegun import freeze_time
 from jwt import decode
 from app.core import settings
-from app.core.security import create_access_token
+from app.core.security.token_utils import create_access_token
 
 settings = settings.Settings()
 SECRET_KEY = settings.SECRET_KEY
