@@ -6,7 +6,7 @@ from fastapi import HTTPException, Depends
 from fastapi import APIRouter
 
 from app.core.security.password_utils import verify_password
-from app.core.security.token_utils import validate_refresh_token, create_access_token
+from app.core.security.token_utils import validate_refresh_token, create_access_token, create_refresh_token
 from app.models.user import User
 from app.db.db import get_session
 from sqlalchemy import select
@@ -28,7 +28,7 @@ def login(session: T_Session, form_data: T_OAuth2PasswordRequestForm):
             detail="Incorrect username or password",
         )
     access_token = create_access_token(data={"sub": user.username})
-    refresh_token = create_access_token(data={"sub": user.username, "scope": "refresh_token"})
+    refresh_token = create_refresh_token(data={"sub": user.username, "scope": "refresh_token"})
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,

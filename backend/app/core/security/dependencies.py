@@ -15,7 +15,7 @@ settings = settings.Settings()
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = settings.ALGORITHM
 
-def get_current_user(session: Session = Depends(get_session), token: str = Depends(oauth2_scheme)):
+def get_current_user(session: Session = Depends(get_session), token: str = Depends(oauth2_scheme)) -> User:
     credentials_exception = HTTPException(
         status_code=HTTPStatus.UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -26,9 +26,7 @@ def get_current_user(session: Session = Depends(get_session), token: str = Depen
         username: str = payload.get("sub")
         if not username:
             raise credentials_exception
-    except ExpiredSignatureError:
-        raise credentials_exception
-    except PyJWTError:
+    except (ExpiredSignatureError, PyJWTError):
         raise credentials_exception
     user = session.scalar(select(User).where(User.username == username))
     if not user:

@@ -45,11 +45,11 @@ def test_get_token(client, user):
     assert "refresh_token" in tokens
 
 
-def test_token_expired_after_time(client, user):
+def test_acess_token_expired_after_time(client, user):
     with freeze_time("2023-10-01 00:00:00"):
         tokens = login(client, user).json()
         access_token = tokens["access_token"]
-    with freeze_time("2023-10-01 00:31:00"):
+    with freeze_time("2023-10-02 00:31:00"):
         response = client.put(
             f"/api/users/{user.id}",
             json={"username": "wrong", "email": "wrong@wrong.com", "password": "wrong"},
@@ -114,7 +114,7 @@ def test_refresh_token_blacklisted(client, user):
     assert response.json() == {"detail": "Token is blacklisted"}
 
 
-def test_token_expired_dont_refresh(client, user):
+def test_refresh_token_expired_dont_refresh(client, user):
     with freeze_time("2023-10-01 00:00:00"):
         response = client.post(
             "/api/access_token",
