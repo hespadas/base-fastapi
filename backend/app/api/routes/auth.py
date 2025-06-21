@@ -52,13 +52,6 @@ def refresh_access_token(body: RefreshRequest, session: T_Session):
 @router.post("/logout", status_code=HTTPStatus.NO_CONTENT)
 def logout(body: RefreshRequest, session: T_Session):
     refresh_token = body.refresh_token
-    try:
-        validate_refresh_token(refresh_token)
-    except HTTPException:
-        raise HTTPException(
-            status_code=HTTPStatus.UNAUTHORIZED,
-            detail="Could not validate refresh token",
-        )
     blacklist_repo = BlacklistRepository(session)
     if not blacklist_repo.is_blacklisted(refresh_token):
         blacklist_repo.add_to_blacklist(refresh_token)

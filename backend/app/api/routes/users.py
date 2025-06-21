@@ -55,3 +55,17 @@ def delete_user_endpoint(user_id: int, session: T_Session, current_user: T_Curre
         raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="Not allowed to delete this user.")
     user_repo.delete(user_id)
     return None
+
+@router.get("/user/{user_id}", response_model=UserPublicSchema)
+def get_user_detail_endpoint(user_id: int, session: T_Session, current_user: T_CurrentUser):
+    user_repo = UserRepository(session)
+    if user_id != current_user.id:
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="Not allowed to view this user.")
+    user = user_repo.get_detail_if_username_or_email_exists(username=current_user.username)
+    if not user:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="User not found.")
+    return user
+
+@router.get("/user_info", response_model=User, status_code=HTTPStatus.OK)
+def get_user_info(current_user: T_CurrentUser):
+    return current_user

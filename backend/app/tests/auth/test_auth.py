@@ -143,5 +143,4 @@ def test_logout_with_invalid_token(client):
         "/api/logout",
         json={"refresh_token": "invalid"},
     )
-    assert response.status_code == HTTPStatus.UNAUTHORIZED
-    assert response.json() == {"detail": "Could not validate refresh token"}
+    assert response.status_code == HTTPStatus.NO_CONTENT
