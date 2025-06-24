@@ -11,10 +11,11 @@ app = FastAPI()
 def read_root():
     return {"msg": "Run Forrest, Run!"}
 
+prefix = "/api"
 
-app.include_router(users.router, prefix="/api")
-app.include_router(auth.router, prefix="/api")
-app.include_router(experiences.router, prefix="/api")
+app.include_router(users.router, prefix=prefix)
+app.include_router(auth.router, prefix=prefix)
+app.include_router(experiences.router, prefix=prefix)
 
 
 app.add_middleware(

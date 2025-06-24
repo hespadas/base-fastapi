@@ -42,11 +42,11 @@ def test_create_experience_without_authentication(client):
     assert response.json() == {"detail": "Not authenticated"}
 
 
-def test_get_experiences(client, user, experience):
+def test_get_experiences(client, user, experience, token):
     experience_schema = ExperiencePublicSchema.model_validate(experience)
-    response = client.get(f"/api/experiences/{user.id}")
+    response = client.get("/api/experiences", headers={"Authorization": f"Bearer {token}"},)
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == {"experiences": [experience_schema.model_dump(mode="json")]}
+    assert response.json() == [experience_schema.model_dump(mode="json")]
 
 
 def test_update_experience(client, user, experience, token):

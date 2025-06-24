@@ -10,13 +10,13 @@ export default function Header() {
       <Link href="/">Home</Link>
       {user ? (
         <>
-          <span>Olá, {user.username}</span>
+          <span>Hello, {user.username}</span>
           <button onClick={logout}>Logout</button>
         </>
       ) : (
         <>
           <Link href="/login">Login</Link>
-          <Link href="/register">Register</Link>
+          <Link href="/signup">Signup</Link>
         </>
       )}
     </header>
