@@ -1,8 +1,8 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import {useAuth} from "@/app/hooks/useAuth";
-import api from '../lib/api';
+import {useAuth} from "@/hooks/useAuth";
+import api from '../../lib/api';
 
 export default function Profile() {
 
@@ -14,7 +14,6 @@ export default function Profile() {
             try {
                 const response = await api.get('/experiences');
                 setExperiences(response.data);
-                console.log("Fetched experiences:", response.data);
             } catch (error) {
                 console.error("Error fetching experiences:", error);
             }
