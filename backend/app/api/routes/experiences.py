@@ -41,6 +41,15 @@ def get_experiences(session: T_Session, current_user: T_CurrentUser):
     experiences = session.query(Experience).filter(Experience.user_id == current_user.id).all()
     return [ExperiencePublicSchema.model_validate(exp).model_dump(mode="json") for exp in experiences]
 
+@router.get("/experiences/{experience_id}", response_model=ExperiencePublicSchema)
+def get_experience_detail(experience_id: int, session: T_Session, current_user: T_CurrentUser):
+    experience = session.scalar(select(Experience).where(Experience.id == experience_id))
+    if not experience:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Experience not found")
+    if experience.user_id != current_user.id:
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only view your own experiences")
+    return ExperiencePublicSchema.model_validate(experience).model_dump(mode="json")
+
 
 @router.put("/experiences/{experience_id}", response_model=ExperiencePublicSchema)
 def update_experience(
