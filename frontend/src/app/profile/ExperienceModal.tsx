@@ -2,7 +2,7 @@
 
 import { useState, useEffect, FormEvent } from "react";
 
-interface ExperienceData {
+export interface ExperienceData {
   id?: number;
   title: string;
   company: string;

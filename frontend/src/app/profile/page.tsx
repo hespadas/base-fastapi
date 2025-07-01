@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from "react";
 import api from "../../lib/api";
-import ExperienceModal from "./ExperienceModal";
+import ExperienceModal, {ExperienceData} from "./ExperienceModal";
 
 export default function Profile() {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -16,7 +16,16 @@ export default function Profile() {
             setEditData(response.data);
             setIsEditOpen(true);
         } catch (error) {
-            console.error("Erro ao carregar experiência para edição", error);
+            console.error("Error fetching experience for edit:", error);
+        }
+    }
+
+    async function handleDeleteClick(id: number) {
+        try {
+            await api.delete(`/experiences/${id}`);
+            setExperiences(exps => exps.filter(exp => exp.id !== id));
+        } catch (error) {
+            console.error("Error deleting experience:", error);
         }
     }
 
@@ -32,7 +41,21 @@ export default function Profile() {
             <div className="w-full max-w-2xl space-y-6">
                 {experiences.length > 0 ? (
                     experiences.map(exp => (
-                        <div key={exp.id} className="p-6 bg-white rounded-lg shadow-md border border-gray-200">
+                        <div key={exp.id} className="relative p-6 bg-white rounded-lg shadow-md border border-gray-200">
+                            <button
+                                onClick={() => handleDeleteClick(exp.id)}
+                                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-6 w-6"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
                             <h2 className="text-xl font-semibold text-gray-800">{exp.title}</h2>
                             <p className="text-gray-700 font-medium mt-1">Company: {exp.company}</p>
                             <p className="text-gray-800 my-2">{exp.description}</p>
