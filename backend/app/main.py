@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from app.api.routes import users, experiences
-from app.api.routes import auth
+from app.api.routes import users, experiences, auth, projects
 
 app = FastAPI()
 
@@ -16,6 +15,7 @@ prefix = "/api"
 app.include_router(users.router, prefix=prefix)
 app.include_router(auth.router, prefix=prefix)
 app.include_router(experiences.router, prefix=prefix)
+app.include_router(projects.router, prefix=prefix)
 
 
 app.add_middleware(
