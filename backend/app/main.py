@@ -10,6 +10,7 @@ app = FastAPI()
 def read_root():
     return {"msg": "Run Forrest, Run!"}
 
+
 prefix = "/api"
 
 app.include_router(users.router, prefix=prefix)

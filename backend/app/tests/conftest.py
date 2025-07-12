@@ -11,6 +11,7 @@ from app.models.user import registry
 from testcontainers.postgres import PostgresContainer
 
 from app.tests.experiences.experience_factory import ExperienceFactory
+from app.tests.projects.project_factory import ProjectFactory
 from app.tests.users.user_factory import UserFactory
 
 
@@ -58,6 +59,15 @@ async def user(session):
 
 
 @pytest_asyncio.fixture
+async def another_user(session):
+    another_user = UserFactory()
+    session.add(another_user)
+    session.commit()
+    session.refresh(another_user)
+    return another_user
+
+
+@pytest_asyncio.fixture
 async def experience(session):
     experience = ExperienceFactory()
     session.add(experience)
@@ -67,12 +77,12 @@ async def experience(session):
 
 
 @pytest_asyncio.fixture
-async def another_user(session):
-    another_user = UserFactory()
-    session.add(another_user)
+async def project(session, user):
+    project = ProjectFactory(user_id=user.id)
+    session.add(project)
     session.commit()
-    session.refresh(another_user)
-    return another_user
+    session.refresh(project)
+    return project
 
 
 @pytest.fixture()

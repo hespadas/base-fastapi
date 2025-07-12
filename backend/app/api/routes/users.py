@@ -56,6 +56,7 @@ def delete_user_endpoint(user_id: int, session: T_Session, current_user: T_Curre
     user_repo.delete(user_id)
     return None
 
+
 @router.get("/user/{user_id}", response_model=UserPublicSchema)
 def get_user_detail_endpoint(user_id: int, session: T_Session, current_user: T_CurrentUser):
     user_repo = UserRepository(session)
@@ -65,6 +66,7 @@ def get_user_detail_endpoint(user_id: int, session: T_Session, current_user: T_C
     if not user:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="User not found.")
     return user
+
 
 @router.get("/user_info", response_model=User, status_code=HTTPStatus.OK)
 def get_user_info(current_user: T_CurrentUser):

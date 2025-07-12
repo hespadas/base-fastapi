@@ -41,6 +41,7 @@ def get_experiences(session: T_Session, current_user: T_CurrentUser):
     experiences = session.query(Experience).filter(Experience.user_id == current_user.id).all()
     return [ExperiencePublicSchema.model_validate(exp).model_dump(mode="json") for exp in experiences]
 
+
 @router.get("/experiences/{experience_id}", response_model=ExperiencePublicSchema)
 def get_experience_detail(experience_id: int, session: T_Session, current_user: T_CurrentUser):
     experience = session.scalar(select(Experience).where(Experience.id == experience_id))
@@ -55,21 +56,21 @@ def get_experience_detail(experience_id: int, session: T_Session, current_user: 
 def update_experience(
     experience_id: int, experience: ExperienceSchema, session: T_Session, current_user: T_CurrentUser
 ):
-    existing_experience = session.scalar(select(Experience).where(Experience.id == experience_id))
-    if not existing_experience:
+    db_experience = session.scalar(select(Experience).where(Experience.id == experience_id))
+    if not db_experience:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Experience not found")
-    if existing_experience.user_id != current_user.id:
+    if db_experience.user_id != current_user.id:
         raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only update your own experiences")
 
-    existing_experience.title = experience.title
-    existing_experience.description = experience.description or ""
-    existing_experience.start_date = experience.start_date
-    existing_experience.company = experience.company
-    existing_experience.end_date = experience.end_date if experience.end_date else None
+    db_experience.title = experience.title
+    db_experience.description = experience.description or ""
+    db_experience.start_date = experience.start_date
+    db_experience.company = experience.company
+    db_experience.end_date = experience.end_date if experience.end_date else None
 
     session.commit()
-    session.refresh(existing_experience)
-    return existing_experience
+    session.refresh(db_experience)
+    return db_experience
 
 
 @router.delete("/experiences/{experience_id}", status_code=HTTPStatus.NO_CONTENT)

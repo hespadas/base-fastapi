@@ -44,9 +44,13 @@ def test_create_experience_without_authentication(client):
 
 def test_get_experiences(client, user, experience, token):
     experience_schema = ExperiencePublicSchema.model_validate(experience)
-    response = client.get("/api/experiences", headers={"Authorization": f"Bearer {token}"},)
+    response = client.get(
+        "/api/experiences",
+        headers={"Authorization": f"Bearer {token}"},
+    )
     assert response.status_code == HTTPStatus.OK
     assert response.json() == [experience_schema.model_dump(mode="json")]
+
 
 def test_get_experience_detail(client, user, experience, token):
     response = client.get(f"/api/experiences/{experience.id}", headers={"Authorization": f"Bearer {token}"})
@@ -59,6 +63,7 @@ def test_get_experience_detail(client, user, experience, token):
         "start_date": response.json()["start_date"],
         "end_date": response.json()["end_date"],
     }
+
 
 def test_update_experience(client, user, experience, token):
     response = client.put(

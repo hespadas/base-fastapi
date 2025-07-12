@@ -3,6 +3,7 @@ from fastapi import HTTPException, Depends
 from fastapi import APIRouter
 from typing import Annotated
 
+from sqlalchemy import select
 
 from app.core.security.dependencies import get_current_user
 from app.models.project import Project
@@ -16,6 +17,7 @@ router = APIRouter(tags=["Projects"])
 
 T_Session = Annotated[Session, Depends(get_session)]
 T_CurrentUser = Annotated[User, Depends(get_current_user)]
+
 
 @router.post("/projects", status_code=HTTPStatus.CREATED, response_model=ProjectPublicSchema)
 def create_project(project: ProjectSchema, session: T_Session, current_user: T_CurrentUser):
@@ -32,3 +34,21 @@ def create_project(project: ProjectSchema, session: T_Session, current_user: T_C
     session.commit()
     session.refresh(new_project)
     return new_project
+
+
+@router.put("/projects/{project_id}", response_model=ProjectPublicSchema)
+def update_project(project_id: int, project: ProjectSchema, session: T_Session, current_user: T_CurrentUser):
+    db_project = session.scalar(select(Project).where(Project.id == project_id))
+    if not db_project:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Project not found")
+    if db_project.user_id != current_user.id:
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only update your own projects")
+
+    db_project.title = project.title
+    db_project.description = project.description or ""
+    db_project.github_url = project.github_url
+    db_project.project_url = project.project_url
+
+    session.commit()
+    session.refresh(db_project)
+    return db_project

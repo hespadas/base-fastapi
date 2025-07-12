@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
+
 class ProjectSchema(BaseModel):
     title: str
     user_id: int

@@ -23,3 +23,25 @@ def test_create_project(client, user, token):
         "user_id": user.id,
     }
 
+
+def test_update_project(client, user, project, token):
+    response = client.put(
+        f"/api/projects/{project.id}",
+        json={
+            "title": "Updated Project",
+            "description": "This is an updated test project.",
+            "github_url": "www.updatedproject.com",
+            "project_url": "www.updatedproject.com",
+            "user_id": user.id,
+        },
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {
+        "id": project.id,
+        "title": "Updated Project",
+        "description": "This is an updated test project.",
+        "github_url": "www.updatedproject.com",
+        "project_url": "www.updatedproject.com",
+        "user_id": user.id,
+    }
