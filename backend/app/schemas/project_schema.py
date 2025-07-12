@@ -3,7 +3,6 @@ from pydantic import BaseModel, ConfigDict
 
 class ProjectSchema(BaseModel):
     title: str
-    user_id: int
     description: str | None = None
     github_url: str | None = None
     project_url: str | None = None

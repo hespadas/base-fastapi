@@ -52,3 +52,12 @@ def update_project(project_id: int, project: ProjectSchema, session: T_Session, 
     session.commit()
     session.refresh(db_project)
     return db_project
+
+@router.get("/projects", response_model=list[ProjectPublicSchema])
+def get_projects(session: T_Session, current_user: T_CurrentUser):
+    if not current_user:
+        raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail="Not authenticated")
+    projects = session.scalars(select(Project).where(Project.user_id == current_user.id)).all()
+    return projects
+
+
