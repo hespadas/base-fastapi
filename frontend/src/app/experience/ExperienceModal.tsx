@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect, FormEvent, ChangeEvent } from "react";
 
 export interface ExperienceData {
   id?: number;
@@ -22,34 +22,47 @@ export default function CreateEditExperienceModal({
   onSubmit,
   initialData,
 }: CreateEditExperienceModalProps) {
-  const [title, setTitle] = useState("");
-  const [company, setCompany] = useState("");
-  const [description, setDescription] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [fields, setFields] = useState<ExperienceData>({
+    title: "",
+    company: "",
+    description: "",
+    start_date: "",
+    end_date: "",
+  });
 
   useEffect(() => {
     if (initialData) {
-      setTitle(initialData.title);
-      setCompany(initialData.company);
-      setDescription(initialData.description);
-      setStartDate(initialData.start_date);
-      setEndDate(initialData.end_date);
+      setFields({
+        id: initialData.id,
+        title: initialData.title,
+        company: initialData.company,
+        description: initialData.description,
+        start_date: initialData.start_date,
+        end_date: initialData.end_date,
+      });
+    } else {
+      setFields({
+        title: "",
+        company: "",
+        description: "",
+        start_date: "",
+        end_date: "",
+      });
     }
   }, [initialData]);
 
-  const handleSubmit = (e: FormEvent) => {
-  e.preventDefault();
-  const payload: ExperienceData = {
-    ...(initialData && { id: initialData.id }),
-    title,
-    company,
-    description,
-    start_date: startDate,
-    end_date: endDate,
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFields(prev => ({
+      ...prev,
+      [name]: value,
+    }));
   };
-  onSubmit(payload);
-};
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    onSubmit(fields);
+  };
 
   const isEditing = Boolean(initialData);
 
@@ -57,20 +70,21 @@ export default function CreateEditExperienceModal({
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-xl font-semibold mb-4 text-gray-900">
-          {isEditing ? "Editar Experiência" : "Adicionar Experiência"}
+          {isEditing ? "Edit Experience" : "Save Experience"}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
 
           <div className="flex flex-col">
             <label htmlFor="title" className="mb-1 text-sm font-medium text-gray-800">
-              Título
+              Title
             </label>
             <input
               id="title"
+              name="title"
               type="text"
               placeholder="Título"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={fields.title}
+              onChange={handleChange}
               className="w-full p-2 border rounded text-gray-900 placeholder-gray-500 border-gray-400"
               required
             />
@@ -78,14 +92,15 @@ export default function CreateEditExperienceModal({
 
           <div className="flex flex-col">
             <label htmlFor="company" className="mb-1 text-sm font-medium text-gray-800">
-              Empresa
+              Company
             </label>
             <input
               id="company"
+              name="company"
               type="text"
-              placeholder="Empresa"
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
+              placeholder="Company"
+              value={fields.company}
+              onChange={handleChange}
               className="w-full p-2 border rounded text-gray-900 placeholder-gray-500 border-gray-400"
               required
             />
@@ -93,13 +108,14 @@ export default function CreateEditExperienceModal({
 
           <div className="flex flex-col">
             <label htmlFor="description" className="mb-1 text-sm font-medium text-gray-800">
-              Descrição
+              Description
             </label>
             <textarea
               id="description"
-              placeholder="Descrição"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              name="description"
+              placeholder="Description"
+              value={fields.description}
+              onChange={handleChange}
               className="w-full p-2 border rounded text-gray-900 placeholder-gray-500 border-gray-400"
               required
             />
@@ -107,13 +123,14 @@ export default function CreateEditExperienceModal({
 
           <div className="flex flex-col">
             <label htmlFor="startDate" className="mb-1 text-sm font-medium text-gray-800">
-              Data de Início
+              Start Date
             </label>
             <input
               id="startDate"
+              name="start_date"
               type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              value={fields.start_date}
+              onChange={handleChange}
               className="w-full p-2 border rounded text-gray-900 border-gray-400"
               required
             />
@@ -121,13 +138,14 @@ export default function CreateEditExperienceModal({
 
           <div className="flex flex-col">
             <label htmlFor="endDate" className="mb-1 text-sm font-medium text-gray-800">
-              Data de Término
+              End Date
             </label>
             <input
               id="endDate"
+              name="end_date"
               type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
+              value={fields.end_date}
+              onChange={handleChange}
               className="w-full p-2 border rounded text-gray-900 border-gray-400"
             />
           </div>
@@ -138,13 +156,13 @@ export default function CreateEditExperienceModal({
               onClick={onClose}
               className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition"
             >
-              Cancelar
+              Cancel
             </button>
             <button
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white font-medium rounded hover:bg-blue-700 transition"
             >
-              {isEditing ? "Salvar" : "Adicionar"}
+              {isEditing ? "Save" : "Add"}
             </button>
           </div>
         </form>

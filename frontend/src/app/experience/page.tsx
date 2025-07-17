@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import api from "../../lib/api";
 import ExperienceModal, {ExperienceData} from "./ExperienceModal";
 
-export default function Profile() {
+export default function Experience() {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [editData, setEditData] = useState<ExperienceData | null>(null);
