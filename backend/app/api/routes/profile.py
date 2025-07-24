@@ -8,9 +8,7 @@ from sqlalchemy import select
 from app.core.security.dependencies import get_current_user
 from app.models.experience import Experience
 from app.models.project import Project
-# from app.models.profile import Profile
 from app.models.user import User
-# from app.schemas.profile_schema import ProfilePublicSchema, ProfileSchema
 from app.db.db import get_session
 from sqlalchemy.orm import Session
 
